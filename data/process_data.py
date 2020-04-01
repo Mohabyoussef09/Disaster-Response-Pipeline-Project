@@ -2,6 +2,12 @@ import sqlite3
 
 import pandas as pd
 def load_data(messages_filepath, categories_filepath):
+    '''
+    This function is to load input data from csv files
+    :param messages_filepath:  mesasge.csv file path
+    :param categories_filepath: category.csv file path
+    :return: dataframe consist of merged data between two input files
+    '''
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     # merge datasets
@@ -10,6 +16,11 @@ def load_data(messages_filepath, categories_filepath):
     return df
     
 def clean_data(df):
+    '''
+    It take dataframe and clean it
+    :param df: dataframe
+    :return: cleaned dataframe for the modeling part
+    '''
     # create a dataframe of the 36 individual category columns
     categories = df["categories"].str.split(";",expand=True)   
     # select the first row of the categories dataframe
@@ -38,6 +49,12 @@ def clean_data(df):
 
 
 def save_data(df, database_filename):
+    '''
+    save dataframe to database
+    :param df: dataframe
+    :param database_filename: database file path
+    :return: No return
+    '''
     conn = sqlite3.connect(database_filename)
     df.to_sql('table1', conn, index=False)
 

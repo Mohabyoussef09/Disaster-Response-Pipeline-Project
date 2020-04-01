@@ -8,18 +8,21 @@ nltk.download('stopwords')
 import re
 import nltk
 from nltk.corpus import stopwords
-from nltk.stem.porter import PorterStemmer
-from nltk.stem.wordnet import WordNetLemmatizer
+
 from sklearn.pipeline import Pipeline
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report
-from sklearn.model_selection import GridSearchCV
 import pickle
 
 def load_data(database_filepath):
+    '''
+    This function is to load input data from database
+    :param database_filepath: database file path
+    :return: features,label and label keys
+    '''
     # load data from database
     engine = create_engine('sqlite:///'+database_filepath)
     df =  pd.read_sql_table(database_filepath, engine)
@@ -29,19 +32,28 @@ def load_data(database_filepath):
 
 
 def tokenize(text):
-     # Normalize text
-        text = text.lower()
-        text = re.sub("[^A-Za-z0-9]", ' ', text)
-        # Tokenize text
-        words = nltk.word_tokenize(text)
-        # Remove stop words
-        stopWords = set(stopwords.words('english'))
-        words = [w for w in words if w not in stopWords]
+    '''
+        This function is to clean input data
+        :param text: any given text
+        :return: list of cleaned words from the text
+    '''
+    # Normalize text
+    text = text.lower()
+    text = re.sub("[^A-Za-z0-9]", ' ', text)
+    # Tokenize text
+    words = nltk.word_tokenize(text)
+    # Remove stop words
+    stopWords = set(stopwords.words('english'))
+    words = [w for w in words if w not in stopWords]
 
-        return words
+    return words
 
 
 def build_model():
+    '''
+    Build Machine learing model to predict the multi label class
+    :return: pipeline to help in predicting the output
+    '''
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
@@ -59,12 +71,26 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    '''
+    this function is to print classification report
+    :param model: pipeline model
+    :param X_test: input data
+    :param Y_test: labeled data
+    :param category_names: name of categories
+    :return: print classification report
+    '''
     y_pred = model.predict(X_test)
     print(classification_report(Y_test, y_pred, target_names=category_names))
 
 
 
-def save_model(model, model_filepath):   
+def save_model(model, model_filepath):
+    '''
+    Save model to pickle file
+    :param model: pipeline model
+    :param model_filepath: path for the model file
+    :return: no return as it save the model to file direct
+    '''
     temp_pickle = open(model_filepath, 'wb')
     pickle.dump(model, temp_pickle)
     temp_pickle.close()
