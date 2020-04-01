@@ -1,6 +1,5 @@
 import sqlite3
-import sys
-from sqlalchemy import *
+
 import pandas as pd
 def load_data(messages_filepath, categories_filepath):
     messages = pd.read_csv(messages_filepath)

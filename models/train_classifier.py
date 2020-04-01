@@ -1,4 +1,3 @@
-import sys
 # import libraries
 from sqlalchemy import *
 import pandas as pd
